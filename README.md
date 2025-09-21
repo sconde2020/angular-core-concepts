@@ -4,8 +4,21 @@ This guide explains the **10 main Angular core concepts**
 with **clear examples** so you can quickly understand how Angular works.  
 This version uses **standalone components** (no NgModule) and the new @for / @if syntax.
 
+## Table of Contents
+
+1. 👉 **[Components](#components)**
+2. 👉 **[Templates & Data Binding](#templates--data-binding)**
+3. 👉 **[Directives](#directives)**
+4. 👉 **[Pipes](#pipes)**
+5. 👉 **[Dependency Injection & Services](#dependency-injection--services)**
+6. 👉 **[Routing](#routing-with-standalone-components)**
+7. 👉 **[Lifecycle Hooks](#lifecycle-hooks)**
+8. 👉 **[Observables & HTTP](#observables--http)**
+9. 👉 **[Change Detection](#change-detection)**
+10. 👉 **[Forms (Template-driven & Reactive)](#forms-template-driven--reactive)**
+
 ---
-## 1. Components
+## Components
 
 A **component** is a small piece of a web page.
 It combines **HTML** (what you see), **CSS** (how it looks), and **TypeScript** (how it behaves).
@@ -34,7 +47,7 @@ Use it inside another template:
 
 ---
 
-## 2. Standalone Application Setup
+## Standalone Application Setup
 
 With **standalone components**, you don’t need NgModule.
 You bootstrap the root component directly.
@@ -65,7 +78,7 @@ import { HelloComponent } from './hello.component';
 export class AppComponent {}
 ```
 
-## 3. Templates
+## Templates
 
 A **template** is the HTML that belongs to a component.
 It displays data and reacts to user actions using Angular syntax.
@@ -90,7 +103,7 @@ export class HelloComponent {
 
 ---
 
-## 4. Data Binding
+## Data Binding
 
 Data binding connects the **TypeScript code** and the **HTML**.
 It keeps the view and the code in sync.
@@ -152,7 +165,7 @@ export class AppComponent {
 ```
 ---
 
-## 5. Directives (New Syntax)
+## Directives (New Syntax)
 
 Directives change the **look** or **behavior** of HTML elements in dynamic way.
 
@@ -268,7 +281,7 @@ Usage:
 
 ---
 
-## 6. Services & Dependency Injection
+## Services & Dependency Injection
 
 A **service** holds shared logic or data, like fetching data from an API.
 Angular’s **Dependency Injection (DI)** system provides services to components automatically.  
@@ -443,3 +456,229 @@ export class ManualComponent {
 - Manual instantiation is **rare**, usually for utilities or testing.
 
 - Remember: `public` is needed in constructor if you want **to use service in template**, otherwise `private` is enough for **inside-class logic only**.
+
+## Routing (with Standalone Components)
+
+Routing lets users **move between pages** without reloading the browser.
+You define **routes** that map a **URL path** to a **component**.
+
+---
+
+### 1. Static Routing
+
+- All components are loaded when the app starts.
+
+- Simple and good for small apps.
+
+
+```javascript
+import { provideRouter, RouterOutlet, RouterLink } from '@angular/router';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { HomeComponent } from './home.component';
+import { AboutComponent } from './about.component';
+import { AppComponent } from './app.component';
+
+const routes = [
+  { path: '', component: HomeComponent },  // default route
+  { path: 'about', component: AboutComponent } // static route
+];
+
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(routes)] // register routes in app
+});
+```
+
+App template:
+
+
+```html
+<a routerLink="/">Home</a>
+<a routerLink="/about">About</a>  
+
+<router-outlet></router-outlet>
+```
+
+✅ **Key Points**
+
+- All route components are compiled and loaded as soos as app starts.
+
+- Best for **small apps** where bundle size is not an issue.
+
+---
+
+### 2. Lazy Loading
+
+- Feature code is loaded only when the user visits the route.
+
+- Reduces initial bundle size, improving startup performance.
+
+Instead of importing the component directly, use loadComponent:
+
+```javascript
+import { provideRouter, RouterOutlet, RouterLink } from '@angular/router';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { HomeComponent } from './home.component';
+import { AppComponent } from './app.component';
+
+const routes = [
+  { path: '', component: HomeComponent },
+  {
+    path: 'about',
+    loadComponent: () =>
+      import('./about.component').then(m => m.AboutComponent)
+  }
+];
+
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(routes)]
+});
+```
+
+
+App template:
+
+```html
+<a routerLink="/">Home</a>
+<a routerLink="/about">About</a>
+
+<router-outlet></router-outlet>
+```
+
+
+✅ **Key Points**
+
+- The **AboutComponent** code is loaded **only when** `/about` **is visited**.
+
+- Ideal for `large applications` to speed up initial load.
+
+---
+
+## Lifecycle Hooks
+
+Angular provides **special methods (hooks)** that let you run code at specific moments in a component’s life.
+These hooks help you **initialize data, react to changes, manage resources, or clean up.**
+
+---
+
+### Common Lifecycle Hooks
+
+| Hook | When It Runs | Typical Use |
+|------|--------------|-------------|
+| **ngOnChanges** | Every time an `@Input()` property changes (before ngOnInit for the first time) | React to input changes, validate or transform data |
+| **ngOnInit** | Once, right after the component is created and inputs are set | Initialize data, start HTTP calls, set up subscriptions |
+| **ngDoCheck** | During every change detection cycle | Perform custom change detection or performance checks |
+| **ngAfterContentInit** | After Angular projects external content (`<ng-content>`) into the component | Work with projected content |
+| **ngAfterContentChecked** | After every check of projected content | Respond to content updates |
+| **ngAfterViewInit** | After component’s view (and child views) are fully initialized | Access `@ViewChild` elements safely |
+| **ngAfterViewChecked** | After every check of the component’s view | Trigger post-view logic (use carefully to avoid loops) |
+| **ngOnDestroy** | Just before the component is removed from the DOM | Clean up: unsubscribe, stop timers, release resources |
+
+---
+
+### Full Example with Multiple Hooks
+
+👉 **[Lifecycle Hooks Demo](./examples/lifecycle-hooks-demo/)**
+
+---
+
+## Pipes
+
+A **pipe** transforms data in templates without changing the original value.
+Angular provides built-in pipes (like `date`, `currency`) and lets you create custom ones.
+
+Example
+
+```javascript
+<p>Today is {{ today | date: 'fullDate' }}</p>
+<p>Price: {{ price | currency: 'EUR' }}</p>
+```
+
+
+Custom pipe:
+
+```javascript
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({ name: 'exclaim', standalone: true })
+export class ExclaimPipe implements PipeTransform {
+  transform(value: string): string {
+    return value + '!!!';
+  }
+}
+```
+
+---
+
+## Observables & RxJS
+
+Angular uses Observables (from RxJS) to handle async data, like HTTP calls or user events.
+An Observable is like a **stream of values** over time.
+
+Example
+
+```javascript
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'app-user-list',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <ul>
+      @for (user of users; track user.id) {
+        <li>{{ user.name }}</li>
+      }
+    </ul>
+  `
+})
+export class UserListComponent implements OnInit {
+  users: any[] = [];
+
+  // Observable that will emit the user array when data is received
+  users$: Observable<any[]>;
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    // HttpClient.get() returns an Observable → this is the "observable"
+    this.users$ = this.http.get<any[]>('https://jsonplaceholder.typicode.com/users');
+
+    // Subscribe acts as the "observer", receiving data from the Observable
+    this.users$.subscribe({
+      next: data => {
+        this.users = data; // update the component state
+        console.log('Users received:', data);
+      },
+      error: err => console.error('Error fetching users', err),
+      complete: () => console.log('User fetch complete')
+    });
+  }
+}
+```
+
+**Explanation**
+
+- **Observable**: `this.http.get<any[]>('...')`
+
+    - Produces data asynchronously.
+
+    - Represents a** stream of values** that will arrive in the future.
+
+- **Observer**: the object passed to `.subscribe({ next, error, complete })`
+
+    - Receives the data, errors, and completion signals from the Observable.
+
+    - Here, `next` updates `this.users` to display in the template.
+
+- **Flow**:
+
+    1. Component initializes (`ngOnInit`).
+
+    2. `HttpClient.get()` returns an **Observable**.
+
+    3. `.subscribe()` registers an **Observer** that will handle the emitted user data.
+
+    4. Once data arrives, `this.users` is updated and Angular renders the `<li>` elements via `@for`.
