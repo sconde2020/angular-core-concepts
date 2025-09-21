@@ -1,4 +1,4 @@
-# Angular Core Concepts (Beginner Friendly)
+# Angular Core Concepts 
 
 This guide explains the **10 main Angular core concepts**  
 with **clear examples** so you can quickly understand how Angular works.  
