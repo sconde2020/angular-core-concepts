@@ -7,15 +7,15 @@ This version uses **standalone components** (no NgModule) and the new @for / @if
 ## Table of Contents
 
 1. 👉 **[Components](#components)**
-2. 👉 **[Templates & Data Binding](#templates--data-binding)**
-3. 👉 **[Directives](#directives)**
-4. 👉 **[Pipes](#pipes)**
-5. 👉 **[Dependency Injection & Services](#dependency-injection--services)**
-6. 👉 **[Routing](#routing-with-standalone-components)**
-7. 👉 **[Lifecycle Hooks](#lifecycle-hooks)**
-8. 👉 **[Observables & HTTP](#observables--http)**
-9. 👉 **[Change Detection](#change-detection)**
-10. 👉 **[Forms (Template-driven & Reactive)](#forms-template-driven--reactive)**
+2. 👉 **[Standalone Application Setup](#standalone-application-setup)**
+3. 👉 **[Templates](#templates)**
+4. 👉 **[Data Binding](#data-binding)**
+5. 👉 **[Directives (New Syntax)](#directives-new-syntax)**
+6. 👉 **[Services & Dependency Injection](#services--dependency-injection)**
+7. 👉 **[Routing (with Standalone Components)](#routing-with-standalone-components)**
+8. 👉 **[Lifecycle Hooks](#lifecycle-hooks)**
+9. 👉 **[Pipes](#pipes)**
+10. 👉 **[Observables & RxJS](#observables--rxjs)**
 
 ---
 ## Components
@@ -55,6 +55,7 @@ You bootstrap the root component directly.
 Example
 
 ```javascript
+// main.ts
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 
@@ -66,6 +67,7 @@ bootstrapApplication(AppComponent)
 Root component:
 
 ```javascript
+// app.component.ts
 import { Component } from '@angular/core';
 import { HelloComponent } from './hello.component';
 
@@ -457,6 +459,8 @@ export class ManualComponent {
 
 - Remember: `public` is needed in constructor if you want **to use service in template**, otherwise `private` is enough for **inside-class logic only**.
 
+---
+
 ## Routing (with Standalone Components)
 
 Routing lets users **move between pages** without reloading the browser.
@@ -611,7 +615,7 @@ export class ExclaimPipe implements PipeTransform {
 
 ## Observables & RxJS
 
-Angular uses Observables (from RxJS) to handle async data, like HTTP calls or user events.
+Angular uses **Observables** (from RxJS) to handle **async data**, like **HTTP calls** or **user events**.
 An Observable is like a **stream of values** over time.
 
 Example
