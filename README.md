@@ -669,7 +669,7 @@ export class UserListComponent implements OnInit {
 
     - Produces data asynchronously.
 
-    - Represents a** stream of values** that will arrive in the future.
+    - Represents a **stream of values** that will arrive in the future.
 
 - **Observer**: the object passed to `.subscribe({ next, error, complete })`
 
