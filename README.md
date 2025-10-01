@@ -504,7 +504,7 @@ App template:
 
 ✅ **Key Points**
 
-- All route components are compiled and loaded as soos as app starts.
+- All route components are compiled and loaded as soon as app starts.
 
 - Best for **small apps** where bundle size is not an issue.
 
